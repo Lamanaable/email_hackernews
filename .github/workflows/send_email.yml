@@ -1,0 +1,33 @@
+name: Send-HackerNews
+
+on:
+  push:
+    branches: 
+      - master
+  schedule:
+    - cron: "0 9 * * *"
+
+jobs:
+  Run-Mailing-Script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.2'
+      - name: Install dependancies
+        run: pip install -r requirements.txt
+
+      - name: Run HackerNews Mailer Script
+        env:
+          RECIPIENT_1: ${{ secrets.RECIPIENT_1 }} 
+          RECIPIENT_2: ${{ secrets.RECIPIENT_2 }} 
+          SENDER: ${{ secrets.SENDER }} 
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }} 
+          SMTPSERVER: ${{ secrets.SMTPSERVER }} 
+        run: python scrape_and_email.py
