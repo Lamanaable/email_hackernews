@@ -24,7 +24,7 @@ def get_page_content() -> bytes:
 def email_page_content(page_html: bytes):
     raw_html = str(BeautifulSoup(page_html, 'html.parser'))
 
-    raw_html = re.sub(r"[\[].*?[\]]", "", raw_html)
+    # raw_html = re.sub(r"[\[].*?[\]]", "", raw_html)
 
     server = init_server()
 
