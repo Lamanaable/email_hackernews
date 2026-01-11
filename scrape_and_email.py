@@ -25,7 +25,7 @@ def email_page_content(page_html: bytes):
     soup = BeautifulSoup(page_html, "html.parser")
 
     # Fix relative URLs to absolute URLs
-    for tag in soup.find_all(["a", "link", "img", "script"]):
+    for tag in soup.find_all(["a", "link", "img"]):
         if tag.get("href"):
             href = tag["href"]
             if href.startswith("/"):
