@@ -22,9 +22,20 @@ def get_page_content() -> bytes:
 
 
 def email_page_content(page_html: bytes):
-    raw_html = str(BeautifulSoup(page_html, "html.parser"))
+    soup = BeautifulSoup(page_html, "html.parser")
 
-    # raw_html = re.sub(r"[\[].*?[\]]", "", raw_html)
+    # Fix relative URLs to absolute URLs
+    for tag in soup.find_all(["a", "link", "img", "script"]):
+        if tag.get("href"):
+            href = tag["href"]
+            if href.startswith("/"):
+                tag["href"] = f"https://news.ycombinator.com{href}"
+        elif tag.get("src"):
+            src = tag["src"]
+            if src.startswith("/"):
+                tag["src"] = f"https://news.ycombinator.com{src}"
+
+    raw_html = str(soup)
 
     server = init_server()
 
