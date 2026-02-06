@@ -24,38 +24,40 @@ def get_page_content() -> bytes:
 def email_page_content(page_html: bytes):
     soup = BeautifulSoup(page_html, "html.parser")
 
-    # Fix relative URLs to absolute URLs
     for tag in soup.find_all(["a", "link", "img"]):
         if tag.get("href"):
-            href = tag["href"]
+            href = str(tag["href"])
             if href.startswith("/"):
                 tag["href"] = f"https://news.ycombinator.com{href}"
+            else:
+                tag["href"] = f"https://news.ycombinator.com/{href}"
         elif tag.get("src"):
-            src = tag["src"]
+            src = str(tag["src"])
             if src.startswith("/"):
                 tag["src"] = f"https://news.ycombinator.com{src}"
+            else:
+                tag["src"] = f"https://news.ycombinator.com/{src}"
 
     raw_html = str(soup)
 
     server = init_server()
 
-    recipients = [os.getenv("RECIPIENT_1"), os.getenv("RECIPIENT_2")]
+    recipients = [os.getenv("RECIPIENT_1", ""), os.getenv("RECIPIENT_2", "")]
 
     msg = build_message(raw_html, recipients)
 
-    server.sendmail(os.getenv("SENDER"), recipients, msg.as_string())
+    server.sendmail(os.getenv("SENDER", ""), recipients, msg.as_string())
 
     server.quit()
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
 def init_server() -> smtplib.SMTP:
-    username = os.getenv("SENDER")
+    username = os.getenv("SENDER", "")
 
-    password = os.getenv("MAIL_PASSWORD")
+    password = os.getenv("MAIL_PASSWORD", "")
 
-    # server.set_debuglevel(1)
-    server = smtplib.SMTP(os.getenv("SMTPSERVER"), 587)
+    server = smtplib.SMTP(os.getenv("SMTPSERVER", ""), 587)
 
     server.starttls()
     server.login(username, password)
@@ -68,7 +70,7 @@ def build_message(raw_html: str, recipients: list) -> MIMEMultipart:
     today = time.strftime("%Y-%m-%d")
     msg["Subject"] = f"HackerNews {today}"
 
-    msg["From"] = os.getenv("SENDER")
+    msg["From"] = os.getenv("SENDER", "")
 
     msg["To"] = ", ".join(recipients)
 
