@@ -28,12 +28,12 @@ def email_page_content(page_html: bytes):
         if tag.get("href"):
             href = str(tag["href"])
             if "/" not in href:
-                tag["href"] = f"https://news.ycombinator.com{href}"
+                tag["href"] = f"https://news.ycombinator.com/{href}"
             
         elif tag.get("src"):
             src = str(tag["src"])
             if "/" not in src:
-                tag["src"] = f"https://news.ycombinator.com{src}"
+                tag["src"] = f"https://news.ycombinator.com/{src}"
             
     raw_html = str(soup)
 
