@@ -17,7 +17,7 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
 
       - name: Install dependancies
         run: pip install -r requirements.txt
